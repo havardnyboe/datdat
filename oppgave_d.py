@@ -46,9 +46,6 @@ stopp = input("Endestasjon: ")
 strekninger = routesWithStations(start, stopp, dato)
 strekninger_imorgen = routesWithStations(start, stopp, neste_dato)
 
-print(strekninger)
-print(strekninger_imorgen)
-
 print(f"\nTabell for {dato.date()} kl. {dato.time()}")
 if len(strekninger) > 0:
     print_table(strekninger, ["Startstasjon", "Avgang", "Sluttstasjon", "Ankomst"])
@@ -60,13 +57,5 @@ if len(strekninger_imorgen) > 0:
     print_table(strekninger_imorgen, ["Startstasjon", "Avgang", "Sluttstasjon", "Ankomst"])
 else:
     print("Ingen ruter for valgte tidspunkt.")
-# for strekning in strekninger:
-#     print(findStrekningerBetween(strekning[0], strekning[2], strekning[7]))
-    # print(strekning[0], strekning[2], strekning[7])
-
-# print(f"\nTabell for {dato.date()}")
-# get_route_between_station_by_date(start, stopp, dato, is_weekend(dato))
-# print(f"\nTabell for {neste_dato.date()}")
-# get_route_between_station_by_date(start, stopp, neste_dato, is_weekend(neste_dato))
 
 con.close()
