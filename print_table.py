@@ -2,7 +2,7 @@ def midline(table, labels, max_item_len=0):
     if not max_item_len:
         for row in table:
             for line in row:
-                if len(line) > max_item_len:
+                if len(str(line)) > max_item_len:
                     max_item_len = len(line)
 
     for i in range(len(labels)):

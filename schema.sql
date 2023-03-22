@@ -131,7 +131,7 @@ CREATE TABLE BillettTilStrekning(
 );
 
 CREATE TABLE Kundeordre(
-    Ordrenummer INTEGER NOT NULL,
+    Ordrenummer VARCHAR(128) NOT NULL,
     Kunde VARCHAR(128) NOT NULL,
     Tidspunkt TIMESTAMP NOT NULL,
     CONSTRAINT Kundeordre_PK PRIMARY KEY (Ordrenummer),
