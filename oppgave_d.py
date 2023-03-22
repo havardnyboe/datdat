@@ -10,39 +10,63 @@ friday = 4
 def is_weekend(date: datetime.datetime) -> bool:
     return date.weekday() > friday
 
-
-def get_route_between_station_by_date(startstation: str, stopstation: str, timestamp: datetime.datetime, weekend: bool):
-    weekend_query = ""
-    parameter_bindings: list = [startstation + "%", stopstation + "%"]
-    if weekend:
-        weekend_query = "AND KjørerHelger LIKE ?"
-        parameter_bindings.append(weekend)
-
-    cursor.execute(f"""
-    SELECT Startstasjon, Endestasjon, SPR.Avgangstid, SPR.Ankomsttid, Stasjon1, Stasjon2 FROM Togrute as TR
-    INNER JOIN StrekningPåRute as SPR ON TR.ID = SPR.TogruteID
-    INNER JOIN Delstrekning as DS ON SPR.DelstrekningID = DS.ID
-    INNER JOIN Togrutetabell as TT ON TR.Togrutetabell = TT.ID
-    WHERE Startstasjon LIKE ?
-    AND Endestasjon LIKE ?""" + weekend_query + ";", tuple(parameter_bindings))
-
-    print_table(cursor.fetchall(), ["Startstasjon", "Endestasjon",
-                "Avgangstid", "Ankomsttid", "Stasjon1", "Stasjon2"])
+def routesWithStations(a, b, dato: datetime.datetime):
+    if is_weekend(dato): 
+        weekend = "AND KjørerHelger = 1" 
+    else: 
+        weekend = ""
+    cursor.execute("""
+        SELECT  A.Jernbanestasjon, A.Avgangstid, B.Jernbanestasjon, B.Ankomsttid
+        FROM StasjonerITabell A, StasjonerITabell B, Togrutetabell
+        WHERE A.TogrutetabellID = B.TogrutetabellID
+        AND A.Stasjonnummer < B.Stasjonnummer
+        AND A.TogrutetabellID = Togrutetabell.ID
+        AND B.TogrutetabellID = Togrutetabell.ID
+        AND A.Jernbanestasjon LIKE ?
+        AND B.Jernbanestasjon LIKE ?
+        AND KjørerUkedager = 1
+        AND A.Avgangstid > ?""" +
+        weekend +
+        """;
+    """, (a+"%", b+"%", str(dato.time())))
+    
+    routes = cursor.fetchall()
+    return routes
 
 
 dag = input("Skriv inn dato (YYYY-MM-DD): ")
 tid = input("Skriv inn tid (HH:MM): ")
-if dag == "": dag = "1970-01-01"
+if dag == "": dag = "2023-03-24"
 if tid == "": tid = "00:00"
 dato = datetime.datetime.strptime(dag.strip() + " " + tid.strip(), "%Y-%m-%d %H:%M")
 neste_dato = dato + datetime.timedelta(days=1)
 
 start = input("Startstasjon: ")
 stopp = input("Endestasjon: ")
+strekninger = routesWithStations(start, stopp, dato)
+strekninger_imorgen = routesWithStations(start, stopp, neste_dato)
 
-print(f"\nTabell for {dato.date()}")
-get_route_between_station_by_date(start, stopp, dato, is_weekend(dato))
-print(f"\nTabell for {neste_dato.date()}")
-get_route_between_station_by_date(start, stopp, neste_dato, is_weekend(neste_dato))
+print(strekninger)
+print(strekninger_imorgen)
+
+print(f"\nTabell for {dato.date()} kl. {dato.time()}")
+if len(strekninger) > 0:
+    print_table(strekninger, ["Startstasjon", "Avgang", "Sluttstasjon", "Ankomst"])
+else:
+    print("Ingen ruter for valgte tidspunkt.")
+
+print(f"\nTabell for {neste_dato.date()} kl. {neste_dato.time()}")
+if len(strekninger_imorgen) > 0:
+    print_table(strekninger_imorgen, ["Startstasjon", "Avgang", "Sluttstasjon", "Ankomst"])
+else:
+    print("Ingen ruter for valgte tidspunkt.")
+# for strekning in strekninger:
+#     print(findStrekningerBetween(strekning[0], strekning[2], strekning[7]))
+    # print(strekning[0], strekning[2], strekning[7])
+
+# print(f"\nTabell for {dato.date()}")
+# get_route_between_station_by_date(start, stopp, dato, is_weekend(dato))
+# print(f"\nTabell for {neste_dato.date()}")
+# get_route_between_station_by_date(start, stopp, neste_dato, is_weekend(neste_dato))
 
 con.close()
