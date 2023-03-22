@@ -84,6 +84,7 @@ CREATE TABLE Togrutetabell(
 CREATE TABLE StasjonerITabell(
     TogrutetabellID VARCHAR(128) NOT NULL,
     Jernbanestasjon VARCHAR(40) NOT NULL,
+    Stasjonnummer INTEGER NOT NULL,
     Avgangstid TIME,
     Ankomsttid TIME,
     CONSTRAINT StasjonerITabell_PK PRIMARY KEY (TogrutetabellID, Jernbanestasjon),

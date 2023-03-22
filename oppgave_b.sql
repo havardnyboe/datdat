@@ -41,26 +41,26 @@ INSERT INTO Togrutetabell VALUES (3, 1, 0);
 
 -- Fest Stasjonene til tabellene
 -- Rute 1:
-INSERT INTO StasjonerITabell VALUES (1, 'Trondheim S', time("07:49"), time("07:49"));
-INSERT INTO StasjonerITabell VALUES (1, 'Steinskjer', time("09:51"), time("09:51"));
-INSERT INTO StasjonerITabell VALUES (1, 'Mosjøen', time("13:20"), time("13:20"));
-INSERT INTO StasjonerITabell VALUES (1, 'Mo i Rana', time("14:31"), time("14:31"));
-INSERT INTO StasjonerITabell VALUES (1, 'Fauske', time("16:49"), time("16:49"));
-INSERT INTO StasjonerITabell VALUES (1, 'Bodø', time("17:34"), time("17:34"));
+INSERT INTO StasjonerITabell VALUES (1, 'Trondheim S', 1, time("07:49"), time("07:49"));
+INSERT INTO StasjonerITabell VALUES (1, 'Steinkjer', 2, time("09:51"), time("09:51"));
+INSERT INTO StasjonerITabell VALUES (1, 'Mosjøen', 3, time("13:20"), time("13:20"));
+INSERT INTO StasjonerITabell VALUES (1, 'Mo i Rana', 4, time("14:31"), time("14:31"));
+INSERT INTO StasjonerITabell VALUES (1, 'Fauske', 5, time("16:49"), time("16:49"));
+INSERT INTO StasjonerITabell VALUES (1, 'Bodø', 6, time("17:34"), time("17:34"));
 
 -- Rude 2:
-INSERT INTO StasjonerITabell VALUES (2, 'Trondheim S', time("23:05"), time("23:05"));
-INSERT INTO StasjonerITabell VALUES (2, 'Steinskjer', time("00:57"), time("00:57"));
-INSERT INTO StasjonerITabell VALUES (2, 'Mosjøen', time("04:41"), time("04:41"));
-INSERT INTO StasjonerITabell VALUES (2, 'Mo i Rana', time("05:55"), time("05:55"));
-INSERT INTO StasjonerITabell VALUES (2, 'Fauske', time("08:19"), time("08:19"));
-INSERT INTO StasjonerITabell VALUES (2, 'Bodø', time("09:05"), time("09:05"));
+INSERT INTO StasjonerITabell VALUES (2, 'Trondheim S', 1, time("23:05"), time("23:05"));
+INSERT INTO StasjonerITabell VALUES (2, 'Steinkjer', 2, time("00:57"), time("00:57"));
+INSERT INTO StasjonerITabell VALUES (2, 'Mosjøen', 3, time("04:41"), time("04:41"));
+INSERT INTO StasjonerITabell VALUES (2, 'Mo i Rana', 4, time("05:55"), time("05:55"));
+INSERT INTO StasjonerITabell VALUES (2, 'Fauske', 5, time("08:19"), time("08:19"));
+INSERT INTO StasjonerITabell VALUES (2, 'Bodø', 6, time("09:05"), time("09:05"));
 
 -- Rute 3:
-INSERT INTO StasjonerITabell VALUES (3, 'Mo i Rana', time("08:11"), time("08:11"));
-INSERT INTO StasjonerITabell VALUES (3, 'Mosjøen', time("09:14"), time("09:14"));
-INSERT INTO StasjonerITabell VALUES (3, 'Stenskjer', time("12:31"), time("12:31"));
-INSERT INTO StasjonerITabell VALUES (3, 'Trondheim S', time("14:13"), time("14:13"));
+INSERT INTO StasjonerITabell VALUES (3, 'Mo i Rana', 1, time("08:11"), time("08:11"));
+INSERT INTO StasjonerITabell VALUES (3, 'Mosjøen', 2, time("09:14"), time("09:14"));
+INSERT INTO StasjonerITabell VALUES (3, 'Steinkjer', 3, time("12:31"), time("12:31"));
+INSERT INTO StasjonerITabell VALUES (3, 'Trondheim S', 4, time("14:13"), time("14:13"));
 
 -- Kunderegister
 INSERT INTO Kunderegister VALUES (0);
