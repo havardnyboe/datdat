@@ -25,7 +25,8 @@ def routesWithStations(a, b, dato: datetime.datetime):
         AND A.Jernbanestasjon LIKE ?
         AND B.Jernbanestasjon LIKE ?
         AND KjørerUkedager = 1
-        AND A.Avgangstid > ?""" +
+        AND A.Avgangstid > ?
+        ORDER BY A.Avgangstid ASC""" +
         weekend +
         """;
     """, (a+"%", b+"%", str(dato.time())))

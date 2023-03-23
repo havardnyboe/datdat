@@ -19,32 +19,47 @@ def isRegistered():
         return getKunde(email)
     else:
         return False
+
+def findAvailableBeds(togruteforekomst: int, delstrekninger: list):
+    # 1. Finn alle senger på den aktuelle togruteforekomsten
+
+    cursor.execute("""
+        select Seng.VognID, Seng.Nummer, Seng.Kupenummer 
+        from VognIOppsett 
+        Inner join Vogn on VognIOppsett.vognid=vogn.id 
+        inner join Togrute on togrute.vognoppsett=vognoppsettid 
+        inner join togruteforekomst on togrute.id=togruteforekomst.togrute 
+        inner join Seng on Seng.vognid=vogn.id 
+        where togruteforekomst.id = ?;
+    """, (togruteforekomst,))
     
-def totalBeds(togruteID):
+    allBedsOnTogruteforekomst = cursor.fetchall()
+    
+    # 2. Finn alle salg av senger på alle delstrekninger på den aktuelle togruteforekomsten
+
     cursor.execute("""
-        SELECT COUNT(Seng.Nummer)
-            FROM VognIOppsett 
-            INNER JOIN Vogn ON (VognIOppsett.VognID = Vogn.ID)
-            INNER JOIN Vognoppsett ON (VognIOppsett.VognoppsettID = Vognoppsett.ID)
-            INNER JOIN Togrute ON (Togrute.Vognoppsett = VognoppsettID)
-            INNER JOIN Seng ON (Seng.VognID = Vogn.ID)
-            WHERE Togrute.ID = ?;
-    """,(togruteID,))
-    return(cursor.fetchone()[0])
+        SELECT BillettTilStrekning.DelstrekningID, Billett.SengVogn, Billett.Sengnummer, Seng.Kupenummer
+        FROM BillettTilStrekning
+        INNER JOIN Billett ON BillettID=Billett.ID
+        INNER JOIN Seng ON ((Billett.Sengnummer=Seng.Nummer) 
+            AND (Billett.Sengvogn=Seng.VognID))
+        WHERE Togruteforekomst = ?
+        AND Billett.SengNummer NOT NULL;
+    """, (togruteforekomst,))
 
+    allBedSalesOnTogruteforekomst = cursor.fetchall()
 
-def totalSeats(togruteID):
-    cursor.execute("""
-        SELECT COUNT(Sete.Nummer)
-            FROM VognIOppsett 
-            INNER JOIN Vogn ON VognIOppsett.VognID = Vogn.ID
-            INNER JOIN Vognoppsett ON VognIOppsett.VognoppsettID = Vognoppsett.ID
-            INNER JOIN Togrute ON Togrute.Vognoppsett = Vognoppsett.id
-            INNER JOIN Sete ON Sete.VognID = Vogn.ID
-            WHERE Togrute.ID = ?;
-    """,(togruteID,))
-    return(cursor.fetchone()[0])
+    # 3. Finn kupeer der seng allerede er solgt
+        # Alle solgte kupeer(kan inneholde duplikater) på minst en av de valgte delstrekningene:
+    soldBedsOnDelstrekninger = set([bed[1:4] for bed in allBedSalesOnTogruteforekomst if (bed[0],) in delstrekninger])
+    soldCompartments = set([bed[2] for bed in soldBedsOnDelstrekninger])
 
+    # 4. Finn ledige senger også mtp kupeer
+    allAvailableBeds = set(allBedsOnTogruteforekomst).difference(soldBedsOnDelstrekninger)
+    availableBeds = [bed for bed in allAvailableBeds if bed[2] not in soldCompartments]
+
+    return availableBeds
+    
 
 #Funksjon som finner alle ledige
 def findAvailableSeats(togruteforekomst: int, delstrekninger: list): #Returnerer oversikt (liste?) over alle ledige seter
@@ -68,7 +83,8 @@ def findAvailableSeats(togruteforekomst: int, delstrekninger: list): #Returnerer
         SELECT BillettTilStrekning.DelstrekningID, Billett.Setevogn, Billett.Setenummer
         FROM BillettTilStrekning 
         INNER JOIN Billett ON BillettID=Billett.ID
-        WHERE Togruteforekomst = ?;
+        WHERE Togruteforekomst = ?
+        AND Billett.Setenummer NOT NULL;
     """, (togruteforekomst,))
     allSeatSalesOnTogruteforekomst = cursor.fetchall()
 
@@ -113,26 +129,6 @@ def chooseSeats(availableSeats, seatCount):
 
     return chosenSeats
 
-        
-
-#Funksjon som lar booke ett av de ledige
-def bookASeat(togruteforekomst): #Tar inn setet man ønsker å booke
-    antallBiletter = input("Hvor mange biletter ønsker du å kjøpe")
-    for n in range (antallBiletter):
-        billettID = input("Hva er ID på"+n+"'te billetten du ønsker å booke?")
-        seteEllerSeng = input("Skal den være til et sete(1) eller en seng(2)")
-        nummer = input("Hvilke sete/sengenummer")
-        vognNummer = input("Hvilke vognnummer skal den tilhøre")
-        Kundeordrenummer = str(uuid.uuid4())
-
-        # if seteEllerSeng == 1:
-        #     cursor.execute("""
-        #         INSERT INTO Billett ("""+billettID+""","""+togruteforekomst+""", NULL, NULL, """+nummer+""","""+vognNummer+""","""+Kundeordrenummer""")""")
-        # elif seteEllerSeng == 2:
-        #     cursor.execute("""
-        #         INSERT INTO Billett ("""+billettID+""","""+togruteforekomst+""","""+nummer+""","""+vognNummer+""", NULL, NULL"""+Kundeordrenummer""")""")
-
-
 def findStrekningerBetween(routeId, stationNumStart, stationNumEnd):
     strekninger = []
     for stationNum in range(stationNumStart, stationNumEnd):
@@ -150,14 +146,6 @@ def findStrekningerBetween(routeId, stationNumStart, stationNumEnd):
     return strekninger
 
 def routesWithStations(a, b):
-    # cursor.execute("""
-    #     SELECT A.*, B.* 
-    #     FROM StasjonerITabell A, StasjonerITabell B
-    #     WHERE A.TogrutetabellID = B.TogrutetabellID
-    #     AND A.Stasjonnummer < B.Stasjonnummer
-    #     AND A.Jernbanestasjon LIKE ?
-    #     AND B.Jernbanestasjon LIKE ?;
-    # """, (a+"%", b+"%"))
     cursor.execute("""
         SELECT A.*, B.*, Dato, TID
         FROM StasjonerITabell A, StasjonerITabell B
@@ -210,6 +198,7 @@ def buyTicket(togruteforekomst, plasstype, vognID, plassnummer, kundeordrenummer
             INSERT INTO Billett (ID, Togruteforekomst, SeteVogn, SeteNummer, Kundeordrenummer) VALUES (?,?,?,?,?);
         """, (billettID, togruteforekomst, vognID, plassnummer, kundeordrenummer))
         con.commit()
+        print(f"Billett til sete {plassnummer} i vogn {vognID} er nå kjøpt. God tur!")
         return billettID
     
     elif plasstype == "2":
@@ -217,6 +206,7 @@ def buyTicket(togruteforekomst, plasstype, vognID, plassnummer, kundeordrenummer
             INSERT INTO Billett (ID, Togruteforekomst, SengVogn, SengNummer, Kundeordrenummer) VALUES (?,?,?,?,?);
         """, (billettID, togruteforekomst, vognID, plassnummer, kundeordrenummer))
         con.commit()
+        print(f"Billett til seng {plassnummer} i vogn {vognID} er nå kjøpt. God tur!")
         return billettID
     else:
         print("Ugyldig billettype!")
@@ -253,10 +243,24 @@ def selectRoute():
 
     return route
 
+def findAllDelstrekningerInForekomst(togruteforekomst):
+    cursor.execute("""
+        Select Togrute.ID, Startstasjon, Endestasjon
+        From Togrute
+        INNER JOIN Togruteforekomst ON Togrute.ID=Togruteforekomst.Togrute
+        WHERE Togruteforekomst.ID=?
+    """, (togruteforekomst, ))
+    stations = cursor.fetchone()
+    routes = routesWithStations(stations[1], stations[2])
+    for route in routes:
+        if route[11] == togruteforekomst:
+            startNum = route[2]
+            endNum = route[7]
+    return findStrekningerBetween(stations[0], startNum, endNum)
+
 
 def orderTickets():
     route = selectRoute()
-    strekninger = findStrekningerBetween(route[0], route[2], route[7])
     togruteforekomst = route[11]
 
     harSittevogn, harSovevogn = findVogntyper(route[0])
@@ -273,24 +277,28 @@ def orderTickets():
         plass = "2"
 
     plasstype = {"1": "sitte", "2": "senge"}
-    availableSeats = findAvailableSeats(togruteforekomst, strekninger)
+    if plass == "1": 
+        strekninger = findStrekningerBetween(route[0], route[2], route[7])   
+        availablePlass = findAvailableSeats(togruteforekomst, strekninger)
+    elif plass == "2":
+        strekninger = findAllDelstrekningerInForekomst(togruteforekomst)
+        availablePlass = findAvailableBeds(togruteforekomst, strekninger)
 
-    print(f"Det finnes {len(availableSeats)} ledige sitteplasser på den valgte strekningen")
+    print(f"Det finnes {len(availablePlass)} ledige {plasstype[plass]}plasser på den valgte strekningen")
 
     numberOfSeats = -1
     while numberOfSeats < 1:
         try:
-            numberOfSeats = int(input(f"Hvor mange sitteplasser ønsker du? "))
+            numberOfSeats = int(input(f"Hvor mange {plasstype[plass]}plasser ønsker du? "))
         except ValueError:
             print("Ikke et gyldig tall!")
             continue
-
-        if not 0 < numberOfSeats <= len(availableSeats):
+        if not 0 < numberOfSeats <= len(availablePlass):
             print("Ikke en gyldig valgmulighet!")
             numberOfSeats = -1
 
     
-    chosenSeats = chooseSeats(availableSeats, numberOfSeats)
+    chosenSeats = chooseSeats(availablePlass, numberOfSeats)
     
 
     ordrenummer = createKundeordre(getKunde(input("Logg inn: ")))
@@ -299,16 +307,9 @@ def orderTickets():
         billettID = buyTicket(togruteforekomst, plass, seat[0], seat[1], ordrenummer)
         for strekning in strekninger:
             ticketToDelstrekning(billettID, strekning[0])
-        
-        
-        
-
 
 
 orderTickets()
 # print(findAvailableSeats(1, []))
-
 con.close()
-
 # getTogruteforekomster()
-
