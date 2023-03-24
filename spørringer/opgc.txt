@@ -1,0 +1,18 @@
+$ python oppgave_c.py
+Hvilken stasjon ønsker du informasjon om togruter fra? trondheim
+Hvilken ukedag ønsker du informasjon om? tirsdag
++--------------+-------------+---------------+--------------------------+------------------------+
+| Startstasjon | Endestasjon | Valgt stasjon | Avgangstid valgt stasjon | Ankomsttid endestasjon |
++--------------+-------------+---------------+--------------------------+------------------------+
+| Trondheim S  | Bodø        | Trondheim S   | 07:49:00                 | 17:34:00               |
+| Trondheim S  | Bodø        | Trondheim S   | 23:05:00                 | 09:05:00               |
+| Mo i Rana    | Trondheim S | Trondheim S   | 14:13:00                 | 14:13:00               |
++--------------+-------------+---------------+--------------------------+------------------------+
+$ python oppgave_c.py
+Hvilken stasjon ønsker du informasjon om togruter fra? fauske
+Hvilken ukedag ønsker du informasjon om? lørdag
++--------------+-------------+---------------+--------------------------+------------------------+
+| Startstasjon | Endestasjon | Valgt stasjon | Avgangstid valgt stasjon | Ankomsttid endestasjon |
++--------------+-------------+---------------+--------------------------+------------------------+
+| Trondheim S  | Bodø        | Fauske        | 08:19:00                 | 09:05:00               |
++--------------+-------------+---------------+--------------------------+------------------------+
