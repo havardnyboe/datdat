@@ -26,6 +26,17 @@ def validateName(name):
 
 
 def validateEmail(mail):
+    cursor.execute("""
+        SELECT EXISTS(SELECT 1 
+            FROM Kunde 
+            WHERE Epostadresse = ?)
+    """, (mail,))
+
+    res = cursor.fetchone()
+    print(res)
+    if cursor.fetchone()[0]:
+        print("Det er allerede opprettet en konto med denne epostadressen.")
+        return
     if re.match("\w+@\w+\.\w+", mail):
         return mail
     else:
