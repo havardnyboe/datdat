@@ -21,3 +21,6 @@ def deleteall():
         print("Databasen laget med alle tabeller :)")
     else:
         quit()
+
+if __name__ == "__main__":
+    deleteall()

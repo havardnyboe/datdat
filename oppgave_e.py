@@ -33,10 +33,9 @@ def validateEmail(mail):
     """, (mail,))
 
     res = cursor.fetchone()
-    print(res)
-    if cursor.fetchone()[0]:
+    if res[0]:
         print("Det er allerede opprettet en konto med denne epostadressen.")
-        return
+        return False
     if re.match("\w+@\w+\.\w+", mail):
         return mail
     else:
@@ -56,6 +55,7 @@ def registrerKunde():
     name = validateName(
         input("Registrer navn på formatet 'Fornavn Etternavn': "))
     mail = validateEmail(input("Registrer e-mailadresse: "))
+    if not mail: return
     phone = validatePhoneNumber(input("Registrer telefonnummer, 8 tall: "))
     id = str(uuid.uuid4())
     addKunde(id, name, mail, phone, 0)

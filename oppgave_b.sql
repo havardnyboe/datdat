@@ -4,15 +4,12 @@
 -- Opprette de tre respektive togrutene
 INSERT INTO Togrute
 VALUES (1, 1, "Trondheim S", "Bodø", 1, 0, time("07:49"), time("17:34"));
--- VALUES (1, 1, "Trondheim S", "Bodø", 1, NULL, time("07:49"), time("17:34"));
 
 INSERT INTO Togrute
 VALUES (2, 2, "Trondheim S", "Bodø", 2, 1, time("23:05"), time("09:05"));
--- VALUES (2, 2, "Trondheim S", "Bodø", 2, NULL, time("23:05"), time("09:05"));
 
 INSERT INTO Togrute
 VALUES (3, 3, "Mo i Rana", "Trondheim S", 3, 2, time("08:11"), time("14:13"));
--- VALUES (3, 3, "Mo i Rana", "Trondheim S", 3, NULL, time("08:11"), time("14:13"));
 
 -- Fest delstrekninger til togrutene (ved strekningPåRute)
 -- Rute 1:

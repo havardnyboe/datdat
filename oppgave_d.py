@@ -25,7 +25,7 @@ def routesWithStations(a, b, dato: datetime.datetime):
         AND A.Jernbanestasjon LIKE ?
         AND B.Jernbanestasjon LIKE ?
         AND KjørerUkedager = 1
-        AND A.Avgangstid > ?
+        AND A.Avgangstid >= ?
         """ +
         weekend +
         """
@@ -41,12 +41,12 @@ tid = input("Skriv inn tid (HH:MM): ")
 if dag == "": dag = "2023-03-24"
 if tid == "": tid = "00:00"
 dato = datetime.datetime.strptime(dag.strip() + " " + tid.strip(), "%Y-%m-%d %H:%M")
-neste_dato = dato + datetime.timedelta(days=1)
+imorgen = datetime.datetime.strptime(dag.strip(), "%Y-%m-%d") + datetime.timedelta(days=1)
 
 start = input("Startstasjon: ")
 stopp = input("Endestasjon: ")
 strekninger = routesWithStations(start, stopp, dato)
-strekninger_imorgen = routesWithStations(start, stopp, neste_dato)
+strekninger_imorgen = routesWithStations(start, stopp, imorgen)
 
 print(f"\nTabell for {dato.date()} kl. {dato.time()}")
 if len(strekninger) > 0:
@@ -54,7 +54,7 @@ if len(strekninger) > 0:
 else:
     print("Ingen ruter for valgte tidspunkt.")
 
-print(f"\nTabell for {neste_dato.date()} kl. {neste_dato.time()}")
+print(f"\nTabell for {imorgen.date()} kl. {imorgen.time()}")
 if len(strekninger_imorgen) > 0:
     print_table(strekninger_imorgen, ["Startstasjon", "Avgang", "Sluttstasjon", "Ankomst"])
 else:

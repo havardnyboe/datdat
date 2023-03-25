@@ -58,7 +58,7 @@ CREATE TABLE Togrute(
     Startstasjon VARCHAR(40) NOT NULL,
     Endestasjon VARCHAR(40) NOT NULL,
     Togrutetabell VARCHAR(128) NOT NULL,
-    Vognoppsett VARCHAR(128),
+    Vognoppsett VARCHAR(128) NOT NULL,
     Avgangstid TIME NOT NULL,
     Ankomsttid TIME NOT NULL,
     CONSTRAINT Rute_PK PRIMARY KEY (ID),
@@ -110,7 +110,7 @@ CREATE TABLE Billett(
     SengVogn INTEGER DEFAULT NULL,
     SeteNummer INTEGER DEFAULT NULL,
     SeteVogn INTEGER DEFAULT NULL,
-    Kundeordrenummer INTEGER,
+    Kundeordrenummer INTEGER NOT NULL,
     CONSTRAINT Billett_PK PRIMARY KEY (ID),
     CONSTRAINT Billett_FK1 FOREIGN KEY (SengNummer, SengVogn) REFERENCES Seng (VognID, Nummer)
         ON UPDATE CASCADE,

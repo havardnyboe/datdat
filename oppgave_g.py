@@ -60,15 +60,9 @@ def findAvailableBeds(togruteforekomst: int):
 
     # 3. Finn kupeer der seng allerede er solgt
     # Alle solgte kupeer på forekomsten:
-    # soldBedsOnForekomst = set(
-    #     [bed[1:4] for bed in allBedSalesOnTogruteforekomst if (bed[0],) in delstrekninger])
     soldCompartments = set([bed[2] for bed in allBedSalesOnTogruteforekomst])
 
     # 4. Finn ledige senger også mtp kupeer
-    print("AllBeds", allBedsOnTogruteforekomst)
-    print("AllBedSales", allBedSalesOnTogruteforekomst)
-
-    # print("SoldBeds", soldBedsOnForekomst)
     allAvailableBeds = set(allBedsOnTogruteforekomst).difference(
         allBedSalesOnTogruteforekomst)
     availableBeds = [bed for bed in allAvailableBeds if bed[2]
@@ -77,7 +71,6 @@ def findAvailableBeds(togruteforekomst: int):
     return availableBeds
 
 
-# Funksjon som finner alle ledige
 # Returnerer oversikt (liste?) over alle ledige seter
 def findAvailableSeats(togruteforekomst: int, delstrekninger: list):
     # 1. Finn alle seter på den aktuelle togruteforekomsten
@@ -261,7 +254,6 @@ def selectRoute():
                 f"#{index+1}: Dato {option[10]}: Fra {option[1]} Kl. {option[3]} -- Til {option[6]} klokken {option[8]}")
 
         select = input("#:")
-        # TODO: Dangerous
         route = routes[int(select)-1]
 
     print("Du har valgt ruten:")
@@ -271,6 +263,7 @@ def selectRoute():
 
 
 def orderTickets():
+    # Bruker velger rute
     route = selectRoute()
     try:
         togruteforekomst = route[11]
@@ -291,6 +284,7 @@ def orderTickets():
         print("Det er kun sengeplasser tilgjengelig på denne strekningen.")
         plass = "2"
 
+    # Finn ledige seter eller senger fra start til slutt
     plasstype = {"1": "sitte", "2": "senge"}
     strekninger = findStrekningerBetween(route[0], route[2], route[7])
     if plass == "1":
@@ -300,6 +294,7 @@ def orderTickets():
 
     print(
         f"Det finnes {len(availablePlass)} ledige {plasstype[plass]}plasser på den valgte strekningen.")
+    if len(availablePlass) == 0: return
 
     # La bruker velge antall seter hen ønsker å bestille
     numberOfSeats = -1
