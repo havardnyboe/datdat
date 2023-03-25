@@ -1,0 +1,5 @@
+$ python oppgave_e.py
+Registrer navn på formatet 'Fornavn Etternavn': Ola Nordmann
+Registrer e-mailadresse: ola@example.com
+Registrer telefonnummer, 8 tall: 99234876
+Hei, Ola Nordmann! Du er nå registrert i vårt kundesystem!

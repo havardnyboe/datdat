@@ -1,0 +1,35 @@
+$ python oppgave_d.py
+Skriv inn dato (YYYY-MM-DD): 2023-03-24
+Skriv inn tid (HH:MM): 04:45
+Startstasjon: steinkjer
+Endestasjon: fauske
+
+Tabell for 2023-03-24 kl. 04:45:00
++--------------+-----------+--------------+-----------+
+| Startstasjon | Avgang    | Sluttstasjon | Ankomst   |
++--------------+-----------+--------------+-----------+
+| Steinkjer    | 09:51:00  | Fauske       | 16:49:00  |
++--------------+-----------+--------------+-----------+
+
+Tabell for 2023-03-25 kl. 04:45:00
+Ingen ruter for valgte tidspunkt.
+$ python oppgave_d.py
+Skriv inn dato (YYYY-MM-DD): 2023-03-24
+Skriv inn tid (HH:MM): 03:23
+Startstasjon: trondheim
+Endestasjon: bodø
+
+Tabell for 2023-03-24 kl. 03:23:00
++--------------+-------------+--------------+-------------+
+| Startstasjon | Avgang      | Sluttstasjon | Ankomst     |
++--------------+-------------+--------------+-------------+
+| Trondheim S  | 07:49:00    | Bodø         | 17:34:00    |
+| Trondheim S  | 23:05:00    | Bodø         | 09:05:00    |
++--------------+-------------+--------------+-------------+
+
+Tabell for 2023-03-25 kl. 03:23:00
++--------------+-------------+--------------+-------------+
+| Startstasjon | Avgang      | Sluttstasjon | Ankomst     |
++--------------+-------------+--------------+-------------+
+| Trondheim S  | 23:05:00    | Bodø         | 09:05:00    |
++--------------+-------------+--------------+-------------+

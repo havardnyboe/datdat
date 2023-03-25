@@ -1,0 +1,28 @@
+$ python oppgave_g.py
+Hvor ønsker du å reise fra? steinkjer
+Hvor ønsker du å reise til? fauske
+Vi har funnet flere mulige ruter. Vennligst velg:
+#1: Dato 2023-04-03: Fra Steinkjer Kl. 00:57:00 -- Til Fauske klokken 08:19:00
+#2: Dato 2023-04-03: Fra Steinkjer Kl. 09:51:00 -- Til Fauske klokken 16:49:00
+#3: Dato 2023-04-04: Fra Steinkjer Kl. 00:57:00 -- Til Fauske klokken 08:19:00
+#4: Dato 2023-04-04: Fra Steinkjer Kl. 09:51:00 -- Til Fauske klokken 16:49:00
+#:3
+Du har valgt ruten:
+Dato 2023-04-04: Fra: Steinkjer Kl. 00:57:00 -- Til Fauske Kl. 08:19:00
+Ønsker du sitteplass, velg #1. Ønsker du sengeplass, velg #2:
+#: 2
+Det finnes 8 ledige sengeplasser på den valgte strekningen.
+Hvor mange sengeplasser ønsker du? 1
+Velg én av de følgende plassene (1/1):
+#1: Vogn 5 - Plass 1
+#2: Vogn 5 - Plass 2
+#3: Vogn 5 - Plass 3
+#4: Vogn 5 - Plass 4
+#5: Vogn 5 - Plass 5
+#6: Vogn 5 - Plass 6
+#7: Vogn 5 - Plass 7
+#8: Vogn 5 - Plass 8
+Velg: 2
+Er du registrert som kunde?(J/N): j
+Skriv inn din email: ola@example.com
+Billett til seng 2 i vogn 5 er nå kjøpt. God tur!

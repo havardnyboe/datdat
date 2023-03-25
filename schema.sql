@@ -58,7 +58,7 @@ CREATE TABLE Togrute(
     Startstasjon VARCHAR(40) NOT NULL,
     Endestasjon VARCHAR(40) NOT NULL,
     Togrutetabell VARCHAR(128) NOT NULL,
-    Vognoppsett VARCHAR(128),
+    Vognoppsett VARCHAR(128) NOT NULL,
     Avgangstid TIME NOT NULL,
     Ankomsttid TIME NOT NULL,
     CONSTRAINT Rute_PK PRIMARY KEY (ID),
@@ -84,6 +84,7 @@ CREATE TABLE Togrutetabell(
 CREATE TABLE StasjonerITabell(
     TogrutetabellID VARCHAR(128) NOT NULL,
     Jernbanestasjon VARCHAR(40) NOT NULL,
+    Stasjonnummer INTEGER NOT NULL,
     Avgangstid TIME,
     Ankomsttid TIME,
     CONSTRAINT StasjonerITabell_PK PRIMARY KEY (TogrutetabellID, Jernbanestasjon),
@@ -105,11 +106,11 @@ CREATE TABLE Togruteforekomst(
 CREATE TABLE Billett(
     ID VARCHAR(128) NOT NULL,
     Togruteforekomst INTEGER NOT NULL,
-    SengNummer INTEGER,
-    SengVogn INTEGER,
-    SeteNummer INTEGER,
-    SeteVogn INTEGER,
-    Kundeordrenummer INTEGER,
+    SengNummer INTEGER DEFAULT NULL,
+    SengVogn INTEGER DEFAULT NULL,
+    SeteNummer INTEGER DEFAULT NULL,
+    SeteVogn INTEGER DEFAULT NULL,
+    Kundeordrenummer INTEGER NOT NULL,
     CONSTRAINT Billett_PK PRIMARY KEY (ID),
     CONSTRAINT Billett_FK1 FOREIGN KEY (SengNummer, SengVogn) REFERENCES Seng (VognID, Nummer)
         ON UPDATE CASCADE,
@@ -130,7 +131,7 @@ CREATE TABLE BillettTilStrekning(
 );
 
 CREATE TABLE Kundeordre(
-    Ordrenummer INTEGER NOT NULL,
+    Ordrenummer VARCHAR(128) NOT NULL,
     Kunde VARCHAR(128) NOT NULL,
     Tidspunkt TIMESTAMP NOT NULL,
     CONSTRAINT Kundeordre_PK PRIMARY KEY (Ordrenummer),
@@ -178,7 +179,7 @@ CREATE TABLE Vognoppsett(
 );
 
 CREATE TABLE VognIOppsett(
-    VognID VARCHAR(128) NOT NUll,
+    VognID INTEGER NOT NUll,
     VognoppsettID VARCHAR(128) NOT NULL,
     Nummer INTEGER NOT NULL,
     CONSTRAINT VognIOppsett_PK PRIMARY KEY (VognID, VognoppsettID),
@@ -189,7 +190,7 @@ CREATE TABLE VognIOppsett(
 );
 
 CREATE TABLE Rad(
-    VognID VARCHAR(128) NOT NULL,
+    VognID INTEGER NOT NULL,
     Nummer INTEGER NOT NULL,
     CONSTRAINT Rad_PK PRIMARY KEY (VognID, Nummer),
     CONSTRAINT Vogn_FK FOREIGN KEY (VognID) REFERENCES Vogn(ID)
@@ -197,7 +198,7 @@ CREATE TABLE Rad(
 );
 
 CREATE TABLE Sete(
-    VognID VARCHAR(128) NOT NULL,
+    VognID INTEGER NOT NULL,
     Nummer INTEGER NOT NUll,
     Radnummer INTEGER,
     CONSTRAINT Sete_PK PRIMARY KEY (VognID, Nummer),
@@ -208,7 +209,7 @@ CREATE TABLE Sete(
 );
 
 CREATE TABLE Kupe(
-  VognID VARCHAR(128) NOT NULL,
+  VognID INTEGER NOT NULL,
   Nummer INTEGER NOT NULL,
   CONSTRAINT Kupe_PK PRIMARY KEY (VognID, Nummer),
   CONSTRAINT Vogn_FK FOREIGN KEY (VognID) REFERENCES Vogn(ID)
@@ -216,7 +217,7 @@ CREATE TABLE Kupe(
 );
 
 CREATE TABLE Seng(
-    VognID VARCHAR(128) NOT NULL,
+    VognID INTEGER NOT NULL,
     Nummer INTEGER NOT NULL,
     Kupenummer INTEGER,
     CONSTRAINT Seng_PK PRIMARY KEY (VognID, Nummer),
