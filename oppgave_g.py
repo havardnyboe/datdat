@@ -29,17 +29,17 @@ def isRegistered():
         return getKunde(registrerKunde())
 
 
-def findAvailableBeds(togruteforekomst: int, delstrekninger: list):
+def findAvailableBeds(togruteforekomst: int):
     # 1. Finn alle senger på den aktuelle togruteforekomsten
 
     cursor.execute("""
-        select Seng.VognID, Seng.Nummer, Seng.Kupenummer 
-        from VognIOppsett 
-        Inner join Vogn on VognIOppsett.vognid=vogn.id 
-        inner join Togrute on togrute.vognoppsett=vognoppsettid 
-        inner join togruteforekomst on togrute.id=togruteforekomst.togrute 
-        inner join Seng on Seng.vognid=vogn.id 
-        where togruteforekomst.id = ?;
+        SELECT Seng.VognID, Seng.Nummer, Seng.Kupenummer, VognIOppsett.Nummer 
+        FROM VognIOppsett 
+        INNER JOIN Vogn ON VognIOppsett.VognId=Vogn.ID 
+        INNER JOIN Togrute ON Togrute.Vognoppsett=VognoppsettID
+        INNER JOIN Togruteforekomst ON Togrute.ID=Togruteforekomst.Togrute 
+        INNER JOIN Seng ON Seng.VognID=Vogn.ID 
+        WHERE Togruteforekomst.ID = ?;
     """, (togruteforekomst,))
 
     allBedsOnTogruteforekomst = cursor.fetchall()
@@ -47,10 +47,11 @@ def findAvailableBeds(togruteforekomst: int, delstrekninger: list):
     # 2. Finn alle salg av senger på den aktuelle togruteforekomsten
 
     cursor.execute("""
-        SELECT Billett.SengVogn, Billett.Sengnummer, Seng.Kupenummer
+        SELECT Billett.SengVogn, Billett.Sengnummer, Seng.Kupenummer, VognIOppsett.Nummer
         FROM Billett
         INNER JOIN Seng ON ((Billett.Sengnummer=Seng.Nummer) 
             AND (Billett.Sengvogn=Seng.VognID))
+        INNER JOIN VognIOppsett ON (Billett.SengVogn=VognIOppsett.VognID)
         WHERE Togruteforekomst = ?
         AND Billett.SengNummer NOT NULL;
     """, (togruteforekomst,))
@@ -59,13 +60,17 @@ def findAvailableBeds(togruteforekomst: int, delstrekninger: list):
 
     # 3. Finn kupeer der seng allerede er solgt
     # Alle solgte kupeer på forekomsten:
-    soldBedsOnForekomst = set(
-        [bed[1:4] for bed in allBedSalesOnTogruteforekomst if (bed[0],) in delstrekninger])
-    soldCompartments = set([bed[2] for bed in soldBedsOnForekomst])
+    # soldBedsOnForekomst = set(
+    #     [bed[1:4] for bed in allBedSalesOnTogruteforekomst if (bed[0],) in delstrekninger])
+    soldCompartments = set([bed[2] for bed in allBedSalesOnTogruteforekomst])
 
     # 4. Finn ledige senger også mtp kupeer
+    print("AllBeds", allBedsOnTogruteforekomst)
+    print("AllBedSales", allBedSalesOnTogruteforekomst)
+
+    # print("SoldBeds", soldBedsOnForekomst)
     allAvailableBeds = set(allBedsOnTogruteforekomst).difference(
-        soldBedsOnForekomst)
+        allBedSalesOnTogruteforekomst)
     availableBeds = [bed for bed in allAvailableBeds if bed[2]
                      not in soldCompartments]
 
@@ -78,13 +83,13 @@ def findAvailableSeats(togruteforekomst: int, delstrekninger: list):
     # 1. Finn alle seter på den aktuelle togruteforekomsten
 
     cursor.execute("""
-        select Sete.VognID, Sete.Nummer 
-        from VognIOppsett 
-        Inner join vogn on VognIOppsett.vognid=vogn.id 
-        inner join togrute on togrute.vognoppsett=vognoppsettid 
-        inner join togruteforekomst on togrute.id=togruteforekomst.togrute 
-        inner join Sete on Sete.vognid=vogn.id 
-        where togruteforekomst.id = ?;
+        SELECT Sete.VognID, Sete.Nummer, VognIOppsett.Nummer 
+        FROM VognIOppsett 
+        INNER JOIN Vogn ON VognIOppsett.Vognid=Vogn.ID
+        INNER JOIN Togrute ON Togrute.Vognoppsett=VognoppsettID 
+        INNER JOIN Togruteforekomst ON Togrute.ID=Togruteforekomst.Togrute 
+        INNER JOIN Sete ON Sete.Vognid=Vogn.ID 
+        WHERE Togruteforekomst.ID = ?;
     """, (togruteforekomst,))
 
     allSeatsOnTogruteforekomst = cursor.fetchall()
@@ -92,9 +97,10 @@ def findAvailableSeats(togruteforekomst: int, delstrekninger: list):
     # 2. Finn alle salg av seter på alle delstrekninger på den aktuelle togruteforekomsten
 
     cursor.execute("""
-        SELECT BillettTilStrekning.DelstrekningID, Billett.Setevogn, Billett.Setenummer
+        SELECT BillettTilStrekning.DelstrekningID, Billett.Setevogn, Billett.Setenummer, VognIOppsett.Nummer
         FROM BillettTilStrekning 
         INNER JOIN Billett ON BillettID=Billett.ID
+        INNER JOIN VognIOppsett ON Billett.Setevogn=VognIOppsett.VognID
         WHERE Togruteforekomst = ?
         AND Billett.Setenummer NOT NULL;
     """, (togruteforekomst,))
@@ -104,10 +110,9 @@ def findAvailableSeats(togruteforekomst: int, delstrekninger: list):
 
     # Alle unike solgte seter på minst en av de valgte delstrekningene:
     soldSeatsOnDelstrekninger = set(
-        [seat[1:3] for seat in allSeatSalesOnTogruteforekomst if (seat[0],) in delstrekninger])
+        [seat[1:4] for seat in allSeatSalesOnTogruteforekomst if (seat[0],) in delstrekninger])
 
-    availableSeats = set(allSeatsOnTogruteforekomst).difference(
-        soldSeatsOnDelstrekninger)
+    availableSeats = set(allSeatsOnTogruteforekomst).difference(soldSeatsOnDelstrekninger)
 
     return availableSeats
 
@@ -119,7 +124,7 @@ def chooseSeats(availableSeats, seatCount):
         print(f"Velg én av de følgende plassene ({i+1}/{seatCount}):")
 
         for index, seat in enumerate(availableSeats):
-            print(f"#{index+1}: Vogn {seat[0]} - Plass {seat[1]}")
+            print(f"#{index+1}: Vogn {seat[-1]} - Plass {seat[1]}")
 
         chosenIndex = -1
         while chosenIndex < 1:
@@ -291,7 +296,7 @@ def orderTickets():
     if plass == "1":
         availablePlass = findAvailableSeats(togruteforekomst, strekninger)
     elif plass == "2":
-        availablePlass = findAvailableBeds(togruteforekomst, strekninger)
+        availablePlass = findAvailableBeds(togruteforekomst)
 
     print(
         f"Det finnes {len(availablePlass)} ledige {plasstype[plass]}plasser på den valgte strekningen.")
@@ -315,8 +320,7 @@ def orderTickets():
     # Kjøp billetter. La kunde registrere seg hvis ikke allerede registrert
     ordrenummer = createKundeordre(isRegistered())
     for seat in chosenSeats:
-        billettID = buyTicket(togruteforekomst, plass,
-                              seat[0], seat[1], ordrenummer)
+        billettID = buyTicket(togruteforekomst, plass, seat[0], seat[1], ordrenummer)
         for strekning in strekninger:
             ticketToDelstrekning(billettID, strekning[0])
 
